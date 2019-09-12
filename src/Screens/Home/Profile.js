@@ -47,7 +47,6 @@ class Profile extends Component {
   };
   render() {
     const data = this.state.data;
-    console.warn(data);
     return (
       <Container>
         <View style={style.body}>
