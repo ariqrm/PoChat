@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {View, Text, Content} from 'native-base';
+import {View, Text, Content, Toast} from 'native-base';
 import {TextInput, Alert, TouchableOpacity, Image} from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import {Styles, GRAY, LIGHT_GRAY} from './Styles';
@@ -47,13 +47,30 @@ class Login extends Component {
 
   handleSubmit = () => {
     const data = this.state;
+    const reqemail = /^(?=.*[a-z])(?=.*[@])[0-9a-zA-Z!@#\$%\^\&*\)\(+=._-]{3,}$/;
+    const checkemail = data.email == data.email.match(reqemail);
+    console.warn(checkemail, 'mail');
     this.setState({isLoading: true});
-    if (data.email.length < 10) {
+    if (!checkemail) {
       this.setState({isLoading: false});
-      Alert.alert('Error', 'Wrong Email');
+      Toast.show({
+        text: 'Email not valid!',
+        textStyle: {fontWeight: 'bold'},
+        type: 'warning',
+        buttonText: 'X',
+        duration: 5000,
+      });
+      // Alert.alert('Error', 'Wrong Email');
     } else if (data.password.length < 3) {
       this.setState({isLoading: false});
-      Alert.alert('Error', 'Wrong Userpassword');
+      Toast.show({
+        text: 'Wrong Password!',
+        textStyle: {fontWeight: 'bold'},
+        type: 'warning',
+        buttonText: 'X',
+        duration: 5000,
+      });
+      // Alert.alert('Error', 'Wrong User password');
     } else {
       // save user Data
       firebase
@@ -77,7 +94,7 @@ class Login extends Component {
             }
           });
         })
-        .catch(err => console.log(err));
+        .catch(err => console.warn(err));
     }
   };
   handleSignUp = () => {
@@ -94,12 +111,9 @@ class Login extends Component {
           source={require('../../Assets/topImg.png')}
         />
         <View style={Styles.rootView}>
-          <Icon
-            name={'pinterest'}
+          <Image
             style={Styles.icons}
-            type="font-awesome"
-            size={90}
-            color="#fff"
+            source={require('../../Assets/pochat-2-01.png')}
           />
           <Text style={Styles.welcomeText} transparent>
             Sign In
@@ -133,18 +147,9 @@ class Login extends Component {
               color="#517fa4"
             />
           </TouchableOpacity>
-          <TouchableOpacity
-            onPress={this.handleSignUp}
-            style={Styles.buttonsText}>
-            <Text>Sign Up for free</Text>
-            {/* <Icon
-              name={isLoading ? 'spinner' : 'arrow-right'}
-              style={Styles.buttons}
-              type="evilicon"
-              size={50}
-              color="#517fa4"
-            /> */}
-          </TouchableOpacity>
+          <Text style={Styles.buttonsText} onPress={this.handleSignUp}>
+            Sign Up for free
+          </Text>
         </View>
       </Content>
     );

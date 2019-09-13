@@ -67,6 +67,10 @@ class Profile extends Component {
             <Text> . </Text>
             <Text style={style.buttonsText}>Username</Text>
             <Text>{data.name}</Text>
+            <Text style={style.buttonsText}>Email</Text>
+            <Text>{data.email}</Text>
+            <Text style={style.buttonsText}>Phone</Text>
+            <Text>{data.phone}</Text>
           </View>
         </View>
         <Button style={style.buttons} transparent light onPress={this.SignOut}>
@@ -93,7 +97,7 @@ const style = StyleSheet.create({
     height: 150,
     right: '30%',
     bottom: -70,
-    backgroundColor: 'tomato',
+    backgroundColor: '#a8a8a8bb',
     borderColor: '#a8a8a8bb',
     borderWidth: 5,
     borderRadius: 90,

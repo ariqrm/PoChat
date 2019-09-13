@@ -81,7 +81,12 @@ class Home extends React.Component {
           this.nearby();
         },
         error => console.warn('eeror', error),
-        {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
+        {
+          enableHighAccuracy: true,
+          timeout: 15000,
+          maximumAge: 10000,
+          distanceFilter: 1,
+        },
       );
       // console.warn('You can use the ACCESS_FINE_LOCATION');
     } else {
@@ -110,6 +115,13 @@ class Home extends React.Component {
         });
       });
   }
+  Chat = Chatid => {
+    if (Chatid !== this.state.uid) {
+      this.props.navigation.navigate('Chat', {
+        ChatId: Chatid,
+      });
+    }
+  };
   SignOut = async () => {
     await AsyncStorage.clear().then(() =>
       this.props.navigation.navigate('Login'),
@@ -131,11 +143,10 @@ class Home extends React.Component {
           region={this.state.mapRegion}>
           {this.state.data.map(item => (
             <Marker
+              key={item.location}
               title={item.name || 's'}
               description={item.status || 's'}
-              onCalloutPress={() =>
-                this.props.navigation.navigate('Chat', {ChatId: item.uid})
-              }
+              onCalloutPress={() => this.Chat(item.uid)}
               coordinate={
                 item.location || {
                   latitude: 20,

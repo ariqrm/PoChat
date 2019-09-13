@@ -42,11 +42,6 @@ class ChatList extends React.Component {
         });
     });
   };
-  SignOut = async () => {
-    await AsyncStorage.clear().then(() =>
-      this.props.navigation.navigate('Login'),
-    );
-  };
   render() {
     return (
       <View>
@@ -79,9 +74,6 @@ class ChatList extends React.Component {
             }
           }}
         />
-        <TouchableOpacity onPress={this.SignOut}>
-          <Text>Sign Out</Text>
-        </TouchableOpacity>
       </View>
     );
   }

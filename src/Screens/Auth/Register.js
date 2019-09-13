@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import {Text, Content} from 'native-base';
 import {TextInput, Alert, TouchableOpacity, View, Image} from 'react-native';
+import {Toast, Button} from 'native-base';
 import AsyncStorage from '@react-native-community/async-storage';
 import {Styles, GRAY, LIGHT_GRAY} from './Styles';
 import {Icon} from 'react-native-elements';
@@ -16,10 +17,10 @@ class Register extends Component {
       password: '',
       phone: '',
       name: '',
-      image:
-        'https://pm1.narvii.com/5889/5bd9ba909654893ab36d24c16f21912678f2b253_hq.jpg',
+      image: 'https://img.icons8.com/clouds/2x/user.png',
       full_name: '',
       status: 'offline',
+      showToast: false,
     };
   }
   handleChange = key => val => {
@@ -43,25 +44,58 @@ class Register extends Component {
   };
 
   handleSubmit = () => {
-    this.setState({isLoading: true});
     const data = this.state;
-    if (data.email.length < 10) {
+    const reqemail = /^(?=.*[a-z])(?=.*[@])[0-9a-zA-Z!@#\$%\^\&*\)\(+=._-]{3,}$/;
+    const checkemail = data.email == data.email.match(reqemail);
+    // const reqpassword = /^(?=.*\d)(?=.*[a-z])(?=.*[!@#\$%\^\&*\)\(+=._-])[0-9a-zA-Z!@#\$%\^\&*\)\(+=._-]{5,}$/;
+    // const checkpassword = data.password == data.password.match(reqpassword);
+    this.setState({isLoading: true});
+    if (!checkemail) {
       this.setState({isLoading: false});
-      Alert.alert('Error', 'Wrong email');
-    } else if (data.password.length < 3) {
+      Toast.show({
+        text: 'Email not valid!',
+        textStyle: {fontWeight: 'bold'},
+        type: 'warning',
+        buttonText: 'X',
+        duration: 5000,
+      });
+    } else if (data.password.length < 5) {
       this.setState({isLoading: false});
-      Alert.alert('Error', 'Wrong password');
-    } else if (data.phone.length < 3) {
+      Toast.show({
+        text: 'password must be 5 character or more!',
+        textStyle: {fontWeight: 'bold'},
+        type: 'warning',
+        buttonText: 'X',
+        duration: 5000,
+      });
+    } else if (data.phone.length < 11) {
       this.setState({isLoading: false});
-      Alert.alert('Error', 'Wrong phone');
+      Toast.show({
+        text: 'wrong phone!',
+        textStyle: {fontWeight: 'bold'},
+        type: 'warning',
+        buttonText: 'X',
+        duration: 5000,
+      });
     } else if (data.name.length < 3) {
       this.setState({isLoading: false});
-      Alert.alert('Error', 'Wrong Username');
+      Toast.show({
+        text: 'wrong name!',
+        textStyle: {fontWeight: 'bold'},
+        type: 'warning',
+        buttonText: 'X',
+        duration: 5000,
+      });
     } else if (data.full_name.length < 3) {
       this.setState({isLoading: false});
-      Alert.alert('Error', 'Wrong full name');
+      Toast.show({
+        text: 'wrong full name!',
+        textStyle: {fontWeight: 'bold'},
+        type: 'warning',
+        buttonText: 'X',
+        duration: 5000,
+      });
     } else {
-      this.setState({isLoading: false});
       // save user Data
       firebase
         .auth()
@@ -165,11 +199,9 @@ class Register extends Component {
               color="#517fa4"
             />
           </TouchableOpacity>
-          <TouchableOpacity
-            onPress={this.handleSignIn}
-            style={Styles.buttonsText}>
-            <Text>Sign In</Text>
-          </TouchableOpacity>
+          <Text style={Styles.buttonsText} onPress={this.handleSignIn}>
+            Sign In
+          </Text>
         </View>
       </Content>
     );

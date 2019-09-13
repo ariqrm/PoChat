@@ -19,6 +19,9 @@ export const Styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   rootView: {
+    top: -60,
+    alignItems: 'center',
+    justifyContent: 'center',
     // backgroundColor: '#f0f0ff00',
     // backgroundColor: 'transparent',
     marginLeft: '8%',
@@ -36,12 +39,12 @@ export const Styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
     fontFamily: 'Airbnb Cereal App',
-    marginTop: 30,
-    marginBottom: 50,
+    marginTop: 10,
+    marginBottom: 30,
     fontSize: 34,
   },
   buttons: {
-    left: '78%',
+    left: '40%',
     top: 30,
     // width: '100%',
     width: 50,
@@ -52,7 +55,7 @@ export const Styles = StyleSheet.create({
   },
   buttonsText: {
     position: 'absolute',
-    bottom: '10%',
+    bottom: '0%',
     fontSize: 17,
     fontWeight: 'bold',
     color: 'grey',
@@ -67,8 +70,9 @@ export const Styles = StyleSheet.create({
     left: '-10%',
   },
   icons: {
-    top: 30,
-    position: 'absolute',
-    backgroundColor: '#1E90FF',
+    height: 90,
+    width: 90,
+    position: 'relative',
+    // backgroundColor: '#1E90FF',
   },
 });

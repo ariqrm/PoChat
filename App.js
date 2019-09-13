@@ -1,7 +1,8 @@
 import React from 'react';
 import {createAppContainer, createSwitchNavigator} from 'react-navigation';
 import {createStackNavigator} from 'react-navigation-stack';
-import {createMaterialTopTabNavigator} from 'react-navigation-tabs';
+import {Root, Icon} from 'native-base';
+import {createBottomTabNavigator} from 'react-navigation-tabs';
 import Login from './src/Screens/Auth/Login';
 import Register from './src/Screens/Auth/Register';
 import Home from './src/Screens/Home/Home';
@@ -21,18 +22,57 @@ const MainAuth = createSwitchNavigator({
   },
 });
 
-const MainHome = createMaterialTopTabNavigator({
+const MainHome = createBottomTabNavigator({
   Home: {
     screen: Home,
-    title: 'Home',
+    navigationOptions: {
+      tabBarLabel: 'Map',
+      tabBarIcon: () => {
+        return <Icon name="location" type="EvilIcons" size={30} color="#fff" />;
+      },
+      tabBarOptions: {
+        activeTintColor: '#D4AF37',
+        inactiveTintColor: 'gray',
+        style: {
+          backgroundColor: 'white',
+        },
+        showIcon: true,
+      },
+    },
   },
   ChatList: {
     screen: ChatList,
-    title: 'Chat',
+    navigationOptions: {
+      tabBarLabel: 'Chat',
+      tabBarIcon: () => {
+        return <Icon name="comment" type="EvilIcons" size={30} color="#fff" />;
+      },
+      tabBarOptions: {
+        activeTintColor: '#D4AF37',
+        inactiveTintColor: 'gray',
+        style: {
+          backgroundColor: 'white',
+        },
+        showIcon: true,
+      },
+    },
   },
   Profile: {
     screen: Profile,
-    title: 'Profile',
+    navigationOptions: {
+      tabBarLabel: 'Profile',
+      tabBarIcon: () => {
+        return <Icon name="user" type="EvilIcons" size={30} color="#fff" />;
+      },
+      tabBarOptions: {
+        activeTintColor: '#D4AF37',
+        inactiveTintColor: 'gray',
+        style: {
+          backgroundColor: 'white',
+        },
+        showIcon: true,
+      },
+    },
   },
 });
 
@@ -70,4 +110,8 @@ const App = createAppContainer(
   ),
 );
 
-export default App;
+export default () => (
+  <Root>
+    <App />
+  </Root>
+);

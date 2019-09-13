@@ -1,5 +1,11 @@
 import React from 'react';
-import {ActivityIndicator, StatusBar, View, StyleSheet} from 'react-native';
+import {
+  ActivityIndicator,
+  StatusBar,
+  View,
+  StyleSheet,
+  Image,
+} from 'react-native';
 import {Icon} from 'react-native-elements';
 import AsyncStorage from '@react-native-community/async-storage';
 import firebase from 'firebase';
@@ -36,12 +42,16 @@ export default class AuthLoadingSrceen extends React.Component {
   render() {
     return (
       <View style={Styles.background}>
-        <Icon
+        {/* <Icon
           name={'pinterest'}
           style={Styles.icons}
           type="font-awesome"
           size={90}
           color="#fff"
+        /> */}
+        <Image
+          style={Styles.icons}
+          source={require('../../Assets/pochat-2-01.png')}
         />
         <ActivityIndicator />
         <StatusBar barStyle="default" />
@@ -52,6 +62,8 @@ export default class AuthLoadingSrceen extends React.Component {
 
 const Styles = StyleSheet.create({
   icons: {
+    height: 90,
+    width: 90,
     backgroundColor: '#1E90FF',
   },
   background: {
