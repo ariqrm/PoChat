@@ -8,10 +8,12 @@ import {
   TouchableOpacity,
   Permission,
   StyleSheet,
+  Image,
 } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import MapView, {PROVIDER_GOOGLE, Marker} from 'react-native-maps';
 import geolocation from '@react-native-community/geolocation';
+import firebase from 'firebase';
 
 class Home extends React.Component {
   // static navigationOptions = {
@@ -31,34 +33,32 @@ class Home extends React.Component {
       mapRegion: null,
       lastLat: null,
       lastLong: null,
+      data: [],
     };
   }
+  componentWillUnmount() {
+    geolocation.stopObserving();
+  }
   componentDidMount = async () => {
-    await PermissionsAndroid.request(
-      PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-      {
-        title: 'Cool Photo App Camera Permission',
-        message:
-          'Cool Photo App needs access to your camera ' +
-          'so you can take awesome pictures.',
-        buttonNeutral: 'Ask Me Later',
-        buttonNegative: 'Cancel',
-        buttonPositive: 'OK',
-      },
-    );
+    // await PermissionsAndroid.request(
+    //   PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+    //   {
+    //     title: 'Cool Photo App Camera Permission',
+    //     message:
+    //       'Cool Photo App needs access to your camera ' +
+    //       'so you can take awesome pictures.',
+    //     buttonNeutral: 'Ask Me Later',
+    //     buttonNegative: 'Cancel',
+    //     buttonPositive: 'OK',
+    //   },
+    // );
+    AsyncStorage.getItem('@Key').then(res => {
+      this.setState({uid: res});
+    });
     const granted = await PermissionsAndroid.request(
       PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-      {
-        title: 'Cool Photo App Camera Permission',
-        message:
-          'Cool Photo App needs access to your camera ' +
-          'so you can take awesome pictures.',
-        buttonNeutral: 'Ask Me Later',
-        buttonNegative: 'Cancel',
-        buttonPositive: 'OK',
-      },
     );
-    console.warn(granted);
+    // console.warn(granted);
     if (granted) {
       geolocation.watchPosition(
         position => {
@@ -68,17 +68,25 @@ class Home extends React.Component {
             latitudeDelta: 0.00922 * 1.5,
             longitudeDelta: 0.00421 * 1.5,
           };
+          let LatLng = {
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+          };
+          // console.warn(LatLng);
+          firebase
+            .database()
+            .ref('users/' + this.state.uid + '/location')
+            .update(LatLng);
           this.onRegionChange(region, region.latitude, region.longitude);
+          this.nearby();
         },
         error => console.warn('eeror', error),
+        {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
       );
-      console.warn('You can use the ACCESS_FINE_LOCATION');
+      // console.warn('You can use the ACCESS_FINE_LOCATION');
     } else {
       console.warn('ACCESS_FINE_LOCATION permission denied');
     }
-    AsyncStorage.getItem('@Key').then(res => {
-      this.setState({uid: res});
-    });
   };
   onRegionChange(region, lastLat, lastLong) {
     this.setState({
@@ -88,13 +96,27 @@ class Home extends React.Component {
       lastLong: lastLong || this.state.lastLong,
     });
   }
+  async nearby() {
+    await firebase
+      .database()
+      .ref('users')
+      .once('value')
+      .then(_res => {
+        const data = Object.keys(_res.val()).map(Key => {
+          return _res.val()[Key];
+        });
+        this.setState({
+          data: data,
+        });
+      });
+  }
   SignOut = async () => {
     await AsyncStorage.clear().then(() =>
       this.props.navigation.navigate('Login'),
     );
   };
   render() {
-    console.warn('map', this.state.mapRegion);
+    // console.warn('map', this.state.data);
     return (
       <View style={styles.container}>
         <MapView
@@ -107,7 +129,29 @@ class Home extends React.Component {
           minZoomLevel={0} // default => 0
           maxZoomLevel={20}
           region={this.state.mapRegion}>
-          <Text>ayam</Text>
+          {this.state.data.map(item => (
+            <Marker
+              title={item.name || 's'}
+              description={item.status || 's'}
+              onCalloutPress={() =>
+                this.props.navigation.navigate('Chat', {ChatId: item.uid})
+              }
+              coordinate={
+                item.location || {
+                  latitude: 20,
+                  longitude: 20,
+                }
+              }>
+              <View>
+                <Image
+                  source={{
+                    uri: item.image,
+                  }}
+                  style={{width: 40, height: 40, borderRadius: 55}}
+                />
+              </View>
+            </Marker>
+          ))}
         </MapView>
       </View>
     );
