@@ -26,11 +26,6 @@ class ChatList extends React.Component {
         .database()
         .ref('users')
         .once('value')
-        .then(_res => console.log(_res.val()));
-      firebase
-        .database()
-        .ref('users')
-        .once('value')
         .then(_res => {
           const data = Object.keys(_res.val()).map(Key => {
             return _res.val()[Key];
@@ -38,7 +33,6 @@ class ChatList extends React.Component {
           this.setState({
             data: data,
           });
-          // console.log(this.state.data);
         });
     });
   };
@@ -52,9 +46,14 @@ class ChatList extends React.Component {
           }}
           renderItem={post => {
             const item = post.item;
-            if (item.uid !== this.state.uid) {
+            if (item.uid) {
               return (
-                <View style={styles.card}>
+                <View
+                  style={
+                    item.uid === this.state.uid
+                      ? {display: 'none'}
+                      : styles.card
+                  }>
                   <View style={styles.cardContent}>
                     <Image
                       style={styles.cardImage}
@@ -63,12 +62,26 @@ class ChatList extends React.Component {
                   </View>
                   <Text
                     style={styles.cardTitle}
+                    onLongPress={() =>
+                      this.props.navigation.navigate('FriendProfile', {
+                        ChatId: item.uid,
+                      })
+                    }
                     onPress={() =>
                       this.props.navigation.navigate('Chat', {ChatId: item.uid})
                     }>
                     {item.name}
                   </Text>
-                  <Text style={styles.cardChat}>{item.status}</Text>
+                  <Text style={styles.cardChat}>
+                    <View
+                      style={
+                        item.status === 'online'
+                          ? styles.connect
+                          : styles.disconnect
+                      }
+                    />{' '}
+                    {item.status}
+                  </Text>
                 </View>
               );
             }
@@ -82,24 +95,32 @@ class ChatList extends React.Component {
 export default ChatList;
 
 const styles = StyleSheet.create({
+  connect: {
+    height: 7,
+    width: 7,
+    backgroundColor: 'green',
+    borderRadius: 10,
+    margin: 1,
+  },
+  disconnect: {
+    height: 7,
+    width: 7,
+    backgroundColor: 'red',
+    borderRadius: 10,
+    margin: 1,
+  },
   card: {
     flex: 1,
     backgroundColor: 'transparent',
     margin: 10,
-    // padding: 10,
     height: 60,
     borderBottomWidth: 0.2,
-    // backgroundColor: 'red',
   },
   cardContent: {
     top: '0.00%',
     left: '0.00%',
-    // width: '16.47%',
-    // height: '100.00%',
-    // position: 'absolute',
     width: 50,
     height: 50,
-    // backgroundColor: 'green',
   },
   cardImage: {
     top: '0.00%',
@@ -107,12 +128,8 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     backgroundColor: 'transparent',
-    // position: 'absolute',
     borderRadius: 60,
     borderColor: 'transparent',
-    // height: 40,
-    // width: 40,
-    // backgroundColor: 'blue',
   },
   cardTitle: {
     top: '12.73%',
@@ -125,7 +142,6 @@ const styles = StyleSheet.create({
     opacity: 8,
     fontSize: 15,
     fontFamily: 'montserrat-medium',
-    // backgroundColor: 'yellow',
   },
   cardChat: {
     top: '52.73%',
@@ -138,20 +154,17 @@ const styles = StyleSheet.create({
     opacity: 0.65,
     fontSize: 13,
     fontFamily: 'montserrat-regular',
-    // backgroundColor: 'purple',
   },
   cardTime: {
     top: '63.64%',
     left: '85.03%',
     backgroundColor: 'transparent',
     color: 'rgba(22,31,61,1)',
-    // position: 'absolute',
     opacity: 0.4,
     width: 50,
     height: 50,
     fontSize: 10,
     fontFamily: 'montserrat-regular',
     textAlign: 'right',
-    // backgroundColor: 'white',
   },
 });

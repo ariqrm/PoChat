@@ -1,8 +1,10 @@
-import React from 'react';
+import React, {Fragment} from 'react';
 // import {Text, TextInput, FlatList, View, TouchableOpacity} from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import firebase from 'firebase';
 import {GiftedChat} from 'react-native-gifted-chat';
+import {Header, Left, Body, Right, Button, Icon, Title} from 'native-base';
+import {Image} from 'react-native';
 
 class Chat extends React.Component {
   constructor(props) {
@@ -15,6 +17,7 @@ class Chat extends React.Component {
       status: '',
       text: '',
       messagesList: [],
+      FriendsInfo: {},
     };
   }
   componentDidMount = async () => {
@@ -37,6 +40,17 @@ class Chat extends React.Component {
               value.val(),
             ),
           };
+        });
+        // console.warn(value.val(), 'mmsdsj');
+      });
+    await firebase
+      .database()
+      .ref('users')
+      .once('value')
+      .then(_res => {
+        const data = _res.val()[chatId];
+        this.setState({
+          FriendsInfo: data,
         });
       });
   };
@@ -76,19 +90,56 @@ class Chat extends React.Component {
     }
   };
   render() {
-    console.warn(this.state.image);
+    const data = this.state;
     return (
-      <GiftedChat
-        text={this.state.text}
-        messages={this.state.messagesList}
-        onSend={this.sendMessage}
-        user={{
-          _id: this.state.uid,
-          name: this.state.name,
-          avatar: this.state.image,
-        }}
-        onInputTextChanged={val => this.setState({text: val})}
-      />
+      <Fragment>
+        <Header style={{backgroundColor: '#1E90FF'}}>
+          <Left>
+            <Button
+              transparent
+              onPress={() => this.props.navigation.navigate('ChatList')}>
+              <Icon name="arrow-back" />
+            </Button>
+          </Left>
+          <Left>
+            <Image
+              style={{height: 40, width: 40, borderRadius: 60}}
+              source={{uri: data.FriendsInfo.image}}
+            />
+          </Left>
+          <Body>
+            <Title>{data.FriendsInfo.name || 'wait'}</Title>
+          </Body>
+          <Right>
+            <Button transparent>
+              <Icon name="ios-videocam" />
+            </Button>
+            <Button transparent>
+              <Icon name="call" />
+            </Button>
+            <Button
+              transparent
+              onPress={() =>
+                this.props.navigation.navigate('FriendProfile', {
+                  ChatId: data.FriendsInfo.uid,
+                })
+              }>
+              <Icon name="more" />
+            </Button>
+          </Right>
+        </Header>
+        <GiftedChat
+          text={data.text}
+          messages={data.messagesList}
+          onSend={this.sendMessage}
+          user={{
+            _id: data.uid,
+            name: data.name,
+            avatar: data.image,
+          }}
+          onInputTextChanged={val => this.setState({text: val})}
+        />
+      </Fragment>
     );
   }
 }

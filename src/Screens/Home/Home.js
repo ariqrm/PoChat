@@ -145,7 +145,7 @@ class Home extends React.Component {
             <Marker
               key={item.location}
               title={item.name || 's'}
-              description={item.status || 's'}
+              description={item.phone || 's'}
               onCalloutPress={() => this.Chat(item.uid)}
               coordinate={
                 item.location || {
@@ -171,6 +171,20 @@ class Home extends React.Component {
 
 export default Home;
 const styles = StyleSheet.create({
+  connect: {
+    height: 7,
+    width: 7,
+    backgroundColor: 'green',
+    borderRadius: 10,
+    margin: 1,
+  },
+  disconnect: {
+    height: 7,
+    width: 7,
+    backgroundColor: 'red',
+    borderRadius: 10,
+    margin: 1,
+  },
   container: {
     flex: 1,
     // ...StyleSheet.absoluteFillObject,

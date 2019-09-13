@@ -19,7 +19,7 @@ class Register extends Component {
       name: '',
       image: 'https://img.icons8.com/clouds/2x/user.png',
       full_name: '',
-      status: 'offline',
+      status: 'online',
       showToast: false,
     };
   }
@@ -111,6 +111,7 @@ class Register extends Component {
             .set({
               uid: res.user.uid,
               name: data.name,
+              full_name: data.full_name,
               image: data.image,
               status: data.status,
               phone: data.phone,
@@ -188,6 +189,16 @@ class Register extends Component {
             onBlur={this.handleBlur}
             value={this.state.full_name}
             onChangeText={this.handleChange('full_name')}
+            style={Styles.inputAuth}
+          />
+          <TextInput
+            placeholder="Image url"
+            selectionColor={GRAY}
+            underlineColorAndroid={isFocused ? GRAY : LIGHT_GRAY}
+            onFocus={this.handleFocus}
+            onBlur={this.handleBlur}
+            value={this.state.image}
+            onChangeText={this.handleChange('image')}
             style={Styles.inputAuth}
           />
           <TouchableOpacity onPress={this.handleSubmit} style={Styles.buttons}>

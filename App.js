@@ -9,6 +9,7 @@ import Home from './src/Screens/Home/Home';
 import Profile from './src/Screens/Home/Profile';
 import Chat from './src/Screens/Home/Chat';
 import ChatList from './src/Screens/Home/ChatList';
+import FriendProfile from './src/Screens/Home/FriendProfile';
 import AuthLoadingSrceen from './src/Screens/Auth/AuthLoadingScreen';
 
 const MainAuth = createSwitchNavigator({
@@ -31,7 +32,7 @@ const MainHome = createBottomTabNavigator({
         return <Icon name="location" type="EvilIcons" size={30} color="#fff" />;
       },
       tabBarOptions: {
-        activeTintColor: '#D4AF37',
+        activeTintColor: '#1E90FF',
         inactiveTintColor: 'gray',
         style: {
           backgroundColor: 'white',
@@ -48,7 +49,7 @@ const MainHome = createBottomTabNavigator({
         return <Icon name="comment" type="EvilIcons" size={30} color="#fff" />;
       },
       tabBarOptions: {
-        activeTintColor: '#D4AF37',
+        activeTintColor: '#1E90FF',
         inactiveTintColor: 'gray',
         style: {
           backgroundColor: 'white',
@@ -65,7 +66,7 @@ const MainHome = createBottomTabNavigator({
         return <Icon name="user" type="EvilIcons" size={30} color="#fff" />;
       },
       tabBarOptions: {
-        activeTintColor: '#D4AF37',
+        activeTintColor: '#1E90FF',
         inactiveTintColor: 'gray',
         style: {
           backgroundColor: 'white',
@@ -90,6 +91,9 @@ const HomeStack = createStackNavigator(
     App: MainHome,
     Chat: {
       screen: Chat,
+    },
+    FriendProfile: {
+      screen: FriendProfile,
     },
   },
   {

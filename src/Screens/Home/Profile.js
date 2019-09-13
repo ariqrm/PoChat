@@ -1,14 +1,6 @@
 import React, {Component} from 'react';
-import {
-  Container,
-  Header,
-  Left,
-  Body,
-  Right,
-  Title,
-  Button,
-  Icon,
-} from 'native-base';
+import {Container, Button} from 'native-base';
+import {Icon} from 'react-native-elements';
 import {View, Text, Image, StyleSheet, TouchableOpacity} from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import firebase from 'firebase';
@@ -17,6 +9,7 @@ class Profile extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      isLoading: false,
       uid: '',
       data: [],
     };
@@ -30,20 +23,26 @@ class Profile extends Component {
         .once('value')
         .then(_res => {
           const data = _res.val()[res];
-          // if (data.uid === res) {
           this.setState({
             data: data,
           });
-          // }
-          // console.log(this.state.data);
         });
     });
   };
 
   SignOut = async () => {
-    await AsyncStorage.clear().then(() =>
-      this.props.navigation.navigate('Login'),
-    );
+    this.setState({isLoading: true});
+    await firebase
+      .database()
+      .ref('users/' + this.state.uid)
+      .update({
+        status: 'offline',
+      })
+      .then(async () => {
+        await AsyncStorage.clear().then(() =>
+          this.props.navigation.navigate('Login'),
+        );
+      });
   };
   render() {
     const data = this.state.data;
@@ -55,26 +54,26 @@ class Profile extends Component {
               uri:
                 'https://i.pinimg.com/originals/13/d6/81/13d681b20058a2d6261432a1b69cd781.jpg',
             }}
-            style={{width: '100%', height: '100%'}}
+            style={style.bgImage}
           />
           <View style={style.content}>
             <Image
               source={{
                 uri: data.image,
               }}
-              style={{width: '100%', height: '100%', borderRadius: 90}}
+              style={style.userImage}
             />
             <Text> . </Text>
             <Text style={style.buttonsText}>Username</Text>
-            <Text>{data.name}</Text>
+            <Text style={style.Text}>{data.name}</Text>
             <Text style={style.buttonsText}>Email</Text>
-            <Text>{data.email}</Text>
+            <Text style={style.Text}>{data.email}</Text>
             <Text style={style.buttonsText}>Phone</Text>
-            <Text>{data.phone}</Text>
+            <Text style={style.Text}>{data.phone}</Text>
           </View>
         </View>
-        <Button style={style.buttons} transparent light onPress={this.SignOut}>
-          <Text style={style.buttonsText}>Sign Out</Text>
+        <Button style={style.buttons} onPress={this.SignOut}>
+          <Icon name="logout" type="antdesign" size={30} color="#4a4a4aff" />
         </Button>
       </Container>
     );
@@ -90,7 +89,6 @@ const style = StyleSheet.create({
     position: 'relative',
   },
   content: {
-    // justifyContent: 'center',
     alignItems: 'center',
     position: 'absolute',
     width: 150,
@@ -103,15 +101,35 @@ const style = StyleSheet.create({
     borderRadius: 90,
   },
   buttons: {
-    elevation: 500,
-    marginTop: 10,
-    marginLeft: 10,
-    maxWidth: 80,
-    // textAlign: 'center',
+    right: 3,
+    top: 3,
+    width: 50,
+    height: 50,
+    paddingTop: 4,
+    paddingLeft: 8,
+    position: 'absolute',
+    backgroundColor: '#a8a8a8bb',
+    borderRadius: 50,
   },
   buttonsText: {
-    fontSize: 17,
+    color: '#4a4a4aff',
+    padding: 3,
+    fontSize: 25,
     fontWeight: 'bold',
+  },
+  Text: {
+    color: '#595959',
+    padding: 3,
+    fontSize: 15,
+  },
+  bgImage: {
+    width: '100%',
+    height: '100%',
+  },
+  userImage: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 90,
   },
 });
 

@@ -60,7 +60,6 @@ class Login extends Component {
         buttonText: 'X',
         duration: 5000,
       });
-      // Alert.alert('Error', 'Wrong Email');
     } else if (data.password.length < 3) {
       this.setState({isLoading: false});
       Toast.show({
@@ -70,7 +69,6 @@ class Login extends Component {
         buttonText: 'X',
         duration: 5000,
       });
-      // Alert.alert('Error', 'Wrong User password');
     } else {
       // save user Data
       firebase
@@ -135,6 +133,7 @@ class Login extends Component {
             onFocus={this.handleFocus}
             onBlur={this.handleBlur}
             value={this.state.password}
+            secureTextEntry={true}
             onChangeText={this.handleChange('password')}
             style={Styles.inputAuth}
           />
