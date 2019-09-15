@@ -34,6 +34,18 @@ class ChatList extends React.Component {
             data: data,
           });
         });
+      firebase
+        .database()
+        .ref('users')
+        .on('value')
+        .then(_res => {
+          const data = Object.keys(_res.val()).map(Key => {
+            return _res.val()[Key];
+          });
+          this.setState({
+            data: data,
+          });
+        });
     });
   };
   render() {

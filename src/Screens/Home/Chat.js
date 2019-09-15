@@ -53,6 +53,16 @@ class Chat extends React.Component {
           FriendsInfo: data,
         });
       });
+    await firebase
+      .database()
+      .ref('users')
+      .on('value')
+      .then(_res => {
+        const data = _res.val()[chatId];
+        this.setState({
+          FriendsInfo: data,
+        });
+      });
   };
   sendMessage = () => {
     if (this.state.text.length > 0) {
@@ -111,12 +121,12 @@ class Chat extends React.Component {
             <Title>{data.FriendsInfo.name || 'wait'}</Title>
           </Body>
           <Right>
-            <Button transparent>
+            {/* <Button transparent>
               <Icon name="ios-videocam" />
             </Button>
             <Button transparent>
               <Icon name="call" />
-            </Button>
+            </Button> */}
             <Button
               transparent
               onPress={() =>

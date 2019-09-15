@@ -114,6 +114,18 @@ class Home extends React.Component {
           data: data,
         });
       });
+    await firebase
+      .database()
+      .ref('users')
+      .on('value')
+      .then(_res => {
+        const data = Object.keys(_res.val()).map(Key => {
+          return _res.val()[Key];
+        });
+        this.setState({
+          data: data,
+        });
+      });
   }
   Chat = Chatid => {
     if (Chatid !== this.state.uid) {
@@ -143,7 +155,7 @@ class Home extends React.Component {
           region={this.state.mapRegion}>
           {this.state.data.map(item => (
             <Marker
-              key={item.location}
+              key={'Y' + item.location}
               title={item.name || 's'}
               description={item.phone || 's'}
               onCalloutPress={() => this.Chat(item.uid)}
@@ -153,12 +165,12 @@ class Home extends React.Component {
                   longitude: 20,
                 }
               }>
-              <View>
+              <View style={styles.connect}>
                 <Image
                   source={{
                     uri: item.image,
                   }}
-                  style={{width: 40, height: 40, borderRadius: 55}}
+                  style={styles.image}
                 />
               </View>
             </Marker>
@@ -171,6 +183,11 @@ class Home extends React.Component {
 
 export default Home;
 const styles = StyleSheet.create({
+  image: {
+    height: 40,
+    width: 40,
+    borderRadius: 40,
+  },
   connect: {
     height: 7,
     width: 7,

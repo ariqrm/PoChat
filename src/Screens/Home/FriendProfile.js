@@ -34,6 +34,17 @@ class FriendProfile extends Component {
           uid: chatId,
         });
       });
+    await firebase
+      .database()
+      .ref('users')
+      .on('value')
+      .then(_res => {
+        const data = _res.val()[chatId];
+        this.setState({
+          data: data,
+          uid: chatId,
+        });
+      });
   };
 
   SignOut = async () => {

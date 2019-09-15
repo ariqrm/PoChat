@@ -27,6 +27,16 @@ class Profile extends Component {
             data: data,
           });
         });
+      firebase
+        .database()
+        .ref('users')
+        .on('value')
+        .then(_res => {
+          const data = _res.val()[res];
+          this.setState({
+            data: data,
+          });
+        });
     });
   };
 
