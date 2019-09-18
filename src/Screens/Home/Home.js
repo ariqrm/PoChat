@@ -85,7 +85,7 @@ class Home extends React.Component {
           enableHighAccuracy: true,
           timeout: 15000,
           maximumAge: 10000,
-          distanceFilter: 1,
+          distanceFilter: 2,
         },
       );
       // console.warn('You can use the ACCESS_FINE_LOCATION');
@@ -105,20 +105,7 @@ class Home extends React.Component {
     await firebase
       .database()
       .ref('users')
-      .once('value')
-      .then(_res => {
-        const data = Object.keys(_res.val()).map(Key => {
-          return _res.val()[Key];
-        });
-        this.setState({
-          data: data,
-        });
-      });
-    await firebase
-      .database()
-      .ref('users')
-      .on('value')
-      .then(_res => {
+      .on('value', _res => {
         const data = Object.keys(_res.val()).map(Key => {
           return _res.val()[Key];
         });
@@ -153,28 +140,40 @@ class Home extends React.Component {
           minZoomLevel={0} // default => 0
           maxZoomLevel={20}
           region={this.state.mapRegion}>
-          {this.state.data.map(item => (
-            <Marker
-              key={'Y' + item.location}
-              title={item.name || 's'}
-              description={item.phone || 's'}
-              onCalloutPress={() => this.Chat(item.uid)}
-              coordinate={
-                item.location || {
-                  latitude: 20,
-                  longitude: 20,
-                }
-              }>
-              <View style={styles.connect}>
-                <Image
-                  source={{
-                    uri: item.image,
-                  }}
-                  style={styles.image}
-                />
-              </View>
-            </Marker>
-          ))}
+          {this.state.data.map(item => {
+            const latlang = item.location || {latitude: '1', longitude: '1'};
+            const keys =
+              'Y' + latlang.latitude + latlang.longitude || '987654321';
+            return (
+              <Marker
+                key={keys}
+                title={item.name || 's'}
+                description={item.phone || 's'}
+                onCalloutPress={() => this.Chat(item.uid)}
+                coordinate={
+                  item.location || {
+                    latitude: 20,
+                    longitude: 20,
+                  }
+                }>
+                <View
+                  style={
+                    item.status === 'online'
+                      ? styles.connect
+                      : styles.disconnect
+                  }>
+                  <View style={styles.bgImage}>
+                    <Image
+                      source={{
+                        uri: item.image,
+                      }}
+                      style={styles.image}
+                    />
+                  </View>
+                </View>
+              </Marker>
+            );
+          })}
         </MapView>
       </View>
     );
@@ -183,23 +182,35 @@ class Home extends React.Component {
 
 export default Home;
 const styles = StyleSheet.create({
+  bgImage: {
+    height: 40,
+    width: 40,
+    borderRadius: 40,
+    backgroundColor: '#ffffffaa',
+  },
   image: {
     height: 40,
     width: 40,
     borderRadius: 40,
   },
   connect: {
-    height: 7,
-    width: 7,
-    backgroundColor: 'green',
-    borderRadius: 10,
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 45,
+    width: 45,
+    backgroundColor: '#00ff00aa',
+    borderRadius: 45,
     margin: 1,
   },
   disconnect: {
-    height: 7,
-    width: 7,
-    backgroundColor: 'red',
-    borderRadius: 10,
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 45,
+    width: 45,
+    backgroundColor: '#ff0000aa',
+    borderRadius: 45,
     margin: 1,
   },
   container: {

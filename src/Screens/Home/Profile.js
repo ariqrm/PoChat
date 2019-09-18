@@ -1,7 +1,15 @@
 import React, {Component} from 'react';
 import {Container, Button} from 'native-base';
 import {Icon} from 'react-native-elements';
-import {View, Text, Image, StyleSheet, TouchableOpacity} from 'react-native';
+import {
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  TextInput,
+  StatusBar,
+  ScrollView,
+} from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import firebase from 'firebase';
 
@@ -9,6 +17,13 @@ class Profile extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      Profile: {
+        name: '',
+        email: '',
+        phone: '',
+      },
+      editProfile: {},
+      isFocused: false,
       isLoading: false,
       uid: '',
       data: [],
@@ -20,26 +35,39 @@ class Profile extends Component {
       firebase
         .database()
         .ref('users')
-        .once('value')
-        .then(_res => {
+        .on('value', _res => {
           const data = _res.val()[res];
           this.setState({
             data: data,
-          });
-        });
-      firebase
-        .database()
-        .ref('users')
-        .on('value')
-        .then(_res => {
-          const data = _res.val()[res];
-          this.setState({
-            data: data,
+            Profile: {
+              name: data.name,
+              email: data.email,
+              phone: data.phone,
+            },
           });
         });
     });
   };
-
+  handleFocus = () => {
+    this.setState({
+      isFocused: true,
+    });
+  };
+  handleBlur = () => {
+    this.setState({
+      isFocused: false,
+    });
+    firebase
+      .database()
+      .ref('users/' + this.state.uid)
+      .update(this.state.Profile);
+  };
+  handleChange = key => val => {
+    this.setState({
+      ...this.state,
+      Profile: {[key]: val},
+    });
+  };
   SignOut = async () => {
     this.setState({isLoading: true});
     await firebase
@@ -58,14 +86,16 @@ class Profile extends Component {
     const data = this.state.data;
     return (
       <Container>
-        <View style={style.body}>
-          <Image
-            source={{
-              uri:
-                'https://i.pinimg.com/originals/13/d6/81/13d681b20058a2d6261432a1b69cd781.jpg',
-            }}
-            style={style.bgImage}
-          />
+        <View>
+          <View style={style.body}>
+            <Image
+              source={{
+                uri:
+                  'https://i.pinimg.com/originals/13/d6/81/13d681b20058a2d6261432a1b69cd781.jpg',
+              }}
+              style={style.bgImage}
+            />
+          </View>
           <View style={style.content}>
             <Image
               source={{
@@ -73,24 +103,56 @@ class Profile extends Component {
               }}
               style={style.userImage}
             />
-            <Text> . </Text>
-            <Text style={style.buttonsText}>Username</Text>
-            <Text style={style.Text}>{data.name}</Text>
-            <Text style={style.buttonsText}>Email</Text>
-            <Text style={style.Text}>{data.email}</Text>
-            <Text style={style.buttonsText}>Phone</Text>
-            <Text style={style.Text}>{data.phone}</Text>
           </View>
+          <ScrollView showsVerticalScrollIndicator={false}>
+            <View style={style.infoUser}>
+              <Text style={style.buttonsText}>Username</Text>
+              {console.warn(this.state.isFocused)}
+              <TextInput
+                placeholder={data.name}
+                // underlineColorAndroid={this.state.isFocused === true ? 'green' : 'red'}
+                onFocus={this.handleFocus}
+                onBlur={this.handleBlur}
+                value={this.state.Profile.name || data.name}
+                onChangeText={this.handleChange('name')}
+                style={style.Text}
+              />
+              <Text style={style.buttonsText}>Email</Text>
+              <Text style={style.Text}>{data.email}</Text>
+              <Text style={style.buttonsText}>Phone</Text>
+              <TextInput
+                placeholder={data.phone}
+                onFocus={this.handleFocus}
+                onBlur={this.handleBlur}
+                value={this.state.Profile.phone || data.phone}
+                onChangeText={this.handleChange('phone')}
+                style={style.Text}
+              />
+              <Text style={style.buttonsText}>Image profile</Text>
+              <TextInput
+                placeholder={data.image}
+                onFocus={this.handleFocus}
+                onBlur={this.handleBlur}
+                value={this.state.Profile.image || data.image}
+                onChangeText={this.handleChange('image')}
+                style={style.Text}
+              />
+            </View>
+          </ScrollView>
+          <Button style={style.buttons} onPress={this.SignOut}>
+            <Icon name="logout" type="antdesign" size={30} color="#4a4a4aff" />
+          </Button>
         </View>
-        <Button style={style.buttons} onPress={this.SignOut}>
-          <Icon name="logout" type="antdesign" size={30} color="#4a4a4aff" />
-        </Button>
       </Container>
     );
   }
 }
 
 const style = StyleSheet.create({
+  infoUser: {
+    marginTop: 10,
+    marginBottom: 150,
+  },
   body: {
     justifyContent: 'center',
     alignItems: 'center',
@@ -104,7 +166,7 @@ const style = StyleSheet.create({
     width: 150,
     height: 150,
     right: '30%',
-    bottom: -70,
+    top: '10%',
     backgroundColor: '#a8a8a8bb',
     borderColor: '#a8a8a8bb',
     borderWidth: 5,

@@ -120,7 +120,7 @@ class Register extends Component {
           AsyncStorage.setItem('@Key', res.user.uid);
           AsyncStorage.setItem('name', data.name);
           AsyncStorage.setItem('image', data.image);
-          this.props.navigation.navigate('Home');
+          this.props.navigation.navigate('ChatList');
           // console.log(res);
         })
         .catch(err => console.log(err));

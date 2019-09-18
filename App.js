@@ -24,12 +24,12 @@ const MainAuth = createSwitchNavigator({
 });
 
 const MainHome = createBottomTabNavigator({
-  Home: {
-    screen: Home,
+  ChatList: {
+    screen: ChatList,
     navigationOptions: {
-      tabBarLabel: 'Map',
+      tabBarLabel: 'Chat',
       tabBarIcon: () => {
-        return <Icon name="location" type="EvilIcons" size={30} color="#fff" />;
+        return <Icon name="comment" type="EvilIcons" size={30} />;
       },
       tabBarOptions: {
         activeTintColor: '#1E90FF',
@@ -41,12 +41,12 @@ const MainHome = createBottomTabNavigator({
       },
     },
   },
-  ChatList: {
-    screen: ChatList,
+  Home: {
+    screen: Home,
     navigationOptions: {
-      tabBarLabel: 'Chat',
+      tabBarLabel: 'Map',
       tabBarIcon: () => {
-        return <Icon name="comment" type="EvilIcons" size={30} color="#fff" />;
+        return <Icon name="location" type="EvilIcons" size={30} />;
       },
       tabBarOptions: {
         activeTintColor: '#1E90FF',
@@ -63,7 +63,7 @@ const MainHome = createBottomTabNavigator({
     navigationOptions: {
       tabBarLabel: 'Profile',
       tabBarIcon: () => {
-        return <Icon name="user" type="EvilIcons" size={30} color="#fff" />;
+        return <Icon name="user" type="EvilIcons" size={30} />;
       },
       tabBarOptions: {
         activeTintColor: '#1E90FF',

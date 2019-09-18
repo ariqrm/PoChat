@@ -86,7 +86,7 @@ class Login extends Component {
           AsyncStorage.getItem('@Key', (_err, _res) => {
             if (_res) {
               this.setState({isLoading: false});
-              this.props.navigation.navigate('Home');
+              this.props.navigation.navigate('ChatList');
             } else {
               this.props.navigation.navigate('Login');
             }

@@ -19,7 +19,7 @@ export default class AuthLoadingSrceen extends React.Component {
     setTimeout(() => {
       AsyncStorage.getItem('@Key').then(res =>
         res
-          ? this.props.navigation.navigate('Home')
+          ? this.props.navigation.navigate('ChatList')
           : this.props.navigation.navigate('Login'),
       );
     }, 1000);

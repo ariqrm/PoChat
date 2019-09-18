@@ -1,7 +1,7 @@
 import React from 'react';
 import {
   Text,
-  TextInput,
+  StatusBar,
   FlatList,
   View,
   TouchableOpacity,
@@ -10,13 +10,15 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import firebase from 'firebase';
+import {Toast} from 'native-base';
 
 class ChatList extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       uid: '',
-      data: [],
+      dataUser: [],
+      dataMessages: [],
     };
   }
   componentDidMount = () => {
@@ -25,40 +27,44 @@ class ChatList extends React.Component {
       firebase
         .database()
         .ref('users')
-        .once('value')
-        .then(_res => {
+        .on('value', _res => {
           const data = Object.keys(_res.val()).map(Key => {
             return _res.val()[Key];
           });
           this.setState({
-            data: data,
+            dataUser: data,
           });
         });
       firebase
         .database()
-        .ref('users')
-        .on('value')
-        .then(_res => {
-          const data = Object.keys(_res.val()).map(Key => {
-            return _res.val()[Key];
-          });
+        .ref('messages/' + res)
+        .on('value', _res => {
+          const data = Object.keys(_res.val());
           this.setState({
-            data: data,
+            dataMessages: data,
           });
         });
     });
   };
   render() {
+    const messages = this.state.dataMessages;
     return (
       <View>
+        <StatusBar
+          // translucent
+          backgroundColor="#1E90FF"
+          barStyle="default"
+        />
         <FlatList
-          data={this.state.data}
+          key={messages.length}
+          data={this.state.dataUser}
           keyExtractor={item => {
             return item.uid;
           }}
           renderItem={post => {
             const item = post.item;
-            if (item.uid) {
+            console.log(post, messages);
+            if (messages.includes(item.uid)) {
               return (
                 <View
                   style={
