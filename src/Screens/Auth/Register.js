@@ -191,16 +191,6 @@ class Register extends Component {
             onChangeText={this.handleChange('full_name')}
             style={Styles.inputAuth}
           />
-          <TextInput
-            placeholder="Image url"
-            selectionColor={GRAY}
-            underlineColorAndroid={isFocused ? GRAY : LIGHT_GRAY}
-            onFocus={this.handleFocus}
-            onBlur={this.handleBlur}
-            value={this.state.image}
-            onChangeText={this.handleChange('image')}
-            style={Styles.inputAuth}
-          />
           <TouchableOpacity onPress={this.handleSubmit} style={Styles.buttons}>
             <Icon
               name={isLoading ? 'spinner' : 'arrow-right'}

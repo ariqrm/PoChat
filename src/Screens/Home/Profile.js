@@ -17,6 +17,7 @@ class Profile extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      image: null,
       Profile: {
         name: '',
         email: '',
@@ -67,6 +68,14 @@ class Profile extends Component {
       ...this.state,
       Profile: {[key]: val},
     });
+  };
+  handleFoto = e => {
+    if (e.target.files[0]) {
+      const image = e.target.files[0];
+      this.setState({
+        image: image,
+      });
+    }
   };
   SignOut = async () => {
     this.setState({isLoading: true});

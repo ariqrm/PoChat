@@ -11,6 +11,11 @@ import Chat from './src/Screens/Home/Chat';
 import ChatList from './src/Screens/Home/ChatList';
 import FriendProfile from './src/Screens/Home/FriendProfile';
 import AuthLoadingSrceen from './src/Screens/Auth/AuthLoadingScreen';
+import firebase from 'firebase';
+import {firebaseConfig} from './src/Configs/firebase';
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
 
 const MainAuth = createSwitchNavigator({
   Login: {

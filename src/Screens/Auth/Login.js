@@ -1,22 +1,38 @@
 import React, {Component} from 'react';
-import {View, Text, Content, Toast} from 'native-base';
-import {TextInput, Alert, TouchableOpacity, Image} from 'react-native';
+import {View, Text, Toast, Spinner} from 'native-base';
+import {
+  TextInput,
+  TouchableOpacity,
+  Image,
+  Dimensions,
+  ScrollView,
+} from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import {Styles, GRAY, LIGHT_GRAY} from './Styles';
 import {Icon} from 'react-native-elements';
 import firebase from 'firebase';
 // import Icon from 'react-native-vector-icons';
+import LinearGradient from 'react-native-linear-gradient';
+import Orientation from 'react-native-orientation';
 
 class Login extends Component {
   constructor(props) {
     super(props);
+    const height = Dimensions.get('screen').height;
+    const width = Dimensions.get('screen').width;
     this.state = {
       isLoading: false,
       isFocused: false,
       phone: '',
       password: '',
       email: '',
+      height,
+      width,
     };
+    Orientation.lockToPortrait();
+  }
+  componentWillUnmount() {
+    Orientation.unlockAllOrientations();
   }
   handleChange = key => val => {
     this.setState({[key]: val});
@@ -100,57 +116,81 @@ class Login extends Component {
   };
 
   render() {
-    const {isFocused, isLoading} = this.state;
+    const {isFocused, isLoading, height} = this.state;
     this.handleAuth();
     return (
-      <Content style={Styles.root}>
-        <Image
-          style={Styles.Image}
-          source={require('../../Assets/topImg.png')}
-        />
-        <View style={Styles.rootView}>
-          <Image
-            style={Styles.icons}
-            source={require('../../Assets/pochat-2-01.png')}
+      <View>
+        <View style={{top: -((height / 100) * 20)}}>
+          <LinearGradient
+            colors={['#a1ffd1', '#5998ff']}
+            style={Styles.ball3}
           />
-          <Text style={Styles.welcomeText} transparent>
-            Sign In
-          </Text>
-          <TextInput
-            placeholder="Email"
-            selectionColor={GRAY}
-            underlineColorAndroid={isFocused ? GRAY : LIGHT_GRAY}
-            onFocus={this.handleFocus}
-            onBlur={this.handleBlur}
-            value={this.state.email}
-            onChangeText={this.handleChange('email')}
-            style={Styles.inputAuth}
+          <LinearGradient
+            colors={['#a1ffd1', '#5998ff']}
+            style={Styles.ball4}
           />
-          <TextInput
-            placeholder="password"
-            selectionColor={GRAY}
-            underlineColorAndroid={isFocused ? GRAY : LIGHT_GRAY}
-            onFocus={this.handleFocus}
-            onBlur={this.handleBlur}
-            value={this.state.password}
-            secureTextEntry={true}
-            onChangeText={this.handleChange('password')}
-            style={Styles.inputAuth}
+          <LinearGradient
+            colors={['#a1ffd1', '#5998ff']}
+            style={Styles.ball2}
           />
-          <TouchableOpacity onPress={this.handleSubmit} style={Styles.buttons}>
-            <Icon
-              name={isLoading ? 'spinner' : 'arrow-right'}
-              style={Styles.buttons}
-              type="evilicon"
-              size={50}
-              color="#517fa4"
+          <LinearGradient
+            colors={['#f5f7ff', '#85b3ff', '#0394fc']}
+            style={Styles.ball1}>
+            <Image
+              style={Styles.icons}
+              source={require('../../Assets/pochat-2-01.png')}
             />
-          </TouchableOpacity>
-          <Text style={Styles.buttonsText} onPress={this.handleSignUp}>
-            Sign Up for free
-          </Text>
+          </LinearGradient>
         </View>
-      </Content>
+        <ScrollView>
+          <View style={Styles.headView} />
+          <View style={Styles.contentView}>
+            <TextInput
+              placeholder="Email"
+              selectionColor={GRAY}
+              underlineColorAndroid={isFocused ? GRAY : LIGHT_GRAY}
+              onFocus={this.handleFocus}
+              onBlur={this.handleBlur}
+              value={this.state.email}
+              onChangeText={this.handleChange('email')}
+              style={Styles.inputAuth}
+              onSubmitEditing={() => this.password.focus()}
+            />
+            <TextInput
+              placeholder="password"
+              selectionColor={GRAY}
+              underlineColorAndroid={isFocused ? GRAY : LIGHT_GRAY}
+              onFocus={this.handleFocus}
+              onBlur={this.handleBlur}
+              value={this.state.password}
+              secureTextEntry={true}
+              onChangeText={this.handleChange('password')}
+              style={Styles.inputAuth}
+              ref={r => (this.password = r)}
+            />
+            <TouchableOpacity
+              onPress={this.handleSubmit}
+              style={Styles.buttons}>
+              {isLoading ? (
+                <Spinner color="#517fa4" />
+              ) : (
+                <Icon
+                  name={'arrow-right'}
+                  style={Styles.buttons}
+                  type="evilicon"
+                  size={50}
+                  color="#517fa4"
+                />
+              )}
+            </TouchableOpacity>
+          </View>
+          <View style={Styles.footView}>
+            <Text style={Styles.buttonsText} onPress={this.handleSignUp}>
+              Sign Up for free
+            </Text>
+          </View>
+        </ScrollView>
+      </View>
     );
   }
 }
