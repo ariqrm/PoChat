@@ -1,15 +1,24 @@
 import React, {Component} from 'react';
-import {Text, Content} from 'native-base';
-import {TextInput, Alert, TouchableOpacity, View, Image} from 'react-native';
-import {Toast, Button} from 'native-base';
+import {View, Text, Toast, Spinner} from 'native-base';
+import {
+  TextInput,
+  TouchableOpacity,
+  Image,
+  Dimensions,
+  ScrollView,
+} from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import {Styles, GRAY, LIGHT_GRAY} from './Styles';
 import {Icon} from 'react-native-elements';
 import firebase from 'firebase';
+import LinearGradient from 'react-native-linear-gradient';
+import Orientation from 'react-native-orientation';
 
 class Register extends Component {
   constructor(props) {
     super(props);
+    const height = Dimensions.get('screen').height;
+    const width = Dimensions.get('screen').width;
     this.state = {
       isLoading: false,
       isFocused: false,
@@ -21,7 +30,15 @@ class Register extends Component {
       full_name: '',
       status: 'online',
       showToast: false,
+      height,
+      width,
     };
+  }
+  componentDidMount() {
+    Orientation.lockToPortrait();
+  }
+  componentWillUnmount() {
+    Orientation.unlockAllOrientations();
   }
   handleChange = key => val => {
     this.setState({[key]: val});
@@ -130,81 +147,115 @@ class Register extends Component {
     return this.props.navigation.navigate('Login');
   };
   render() {
-    const {isFocused, isLoading} = this.state;
+    const {isFocused, isLoading, height} = this.state;
     return (
-      <Content style={Styles.root}>
-        <Image
-          style={Styles.Image}
-          source={require('../../Assets/topImg.png')}
-        />
-        <View style={Styles.rootView}>
-          <Text style={Styles.welcomeText}>Sign Up</Text>
-          <TextInput
-            placeholder="Email"
-            selectionColor={GRAY}
-            underlineColorAndroid={isFocused ? GRAY : LIGHT_GRAY}
-            onFocus={this.handleFocus}
-            onBlur={this.handleBlur}
-            value={this.state.email}
-            onChangeText={this.handleChange('email')}
-            style={Styles.inputAuth}
+      <View style={Styles.root}>
+        <View style={{top: -((height / 100) * 20)}}>
+          <LinearGradient
+            colors={['#a1ffd1', '#5998ff']}
+            style={Styles.ball3}
           />
-          <TextInput
-            placeholder="Password"
-            selectionColor={GRAY}
-            underlineColorAndroid={isFocused ? GRAY : LIGHT_GRAY}
-            onFocus={this.handleFocus}
-            onBlur={this.handleBlur}
-            value={this.state.password}
-            secureTextEntry={true}
-            onChangeText={this.handleChange('password')}
-            style={Styles.inputAuth}
+          <LinearGradient
+            colors={['#a1ffd1', '#5998ff']}
+            style={Styles.ball4}
           />
-          <TextInput
-            placeholder="Phone Number"
-            selectionColor={GRAY}
-            underlineColorAndroid={isFocused ? GRAY : LIGHT_GRAY}
-            onFocus={this.handleFocus}
-            onBlur={this.handleBlur}
-            value={this.state.phone}
-            keyboardType="number-pad"
-            onChangeText={this.handleChange('phone')}
-            style={Styles.inputAuth}
+          <LinearGradient
+            colors={['#a1ffd1', '#5998ff']}
+            style={Styles.ball2}
           />
-          <TextInput
-            placeholder="Name"
-            selectionColor={GRAY}
-            underlineColorAndroid={isFocused ? GRAY : LIGHT_GRAY}
-            onFocus={this.handleFocus}
-            onBlur={this.handleBlur}
-            value={this.state.name}
-            onChangeText={this.handleChange('name')}
-            style={Styles.inputAuth}
-          />
-          <TextInput
-            placeholder="Full name"
-            selectionColor={GRAY}
-            underlineColorAndroid={isFocused ? GRAY : LIGHT_GRAY}
-            onFocus={this.handleFocus}
-            onBlur={this.handleBlur}
-            value={this.state.full_name}
-            onChangeText={this.handleChange('full_name')}
-            style={Styles.inputAuth}
-          />
-          <TouchableOpacity onPress={this.handleSubmit} style={Styles.buttons}>
-            <Icon
-              name={isLoading ? 'spinner' : 'arrow-right'}
-              style={Styles.buttons}
-              type="evilicon"
-              size={50}
-              color="#517fa4"
+          <LinearGradient
+            colors={['#f5f7ff', '#85b3ff', '#0394fc']}
+            style={Styles.ball1}>
+            <Image
+              style={Styles.icons}
+              source={require('../../Assets/pochat-2-01.png')}
             />
-          </TouchableOpacity>
-          <Text style={Styles.buttonsText} onPress={this.handleSignIn}>
-            Sign In
-          </Text>
+          </LinearGradient>
         </View>
-      </Content>
+        <ScrollView>
+          <View style={Styles.headView} />
+          <View style={Styles.contentView}>
+            <TextInput
+              placeholder="Email"
+              selectionColor={GRAY}
+              underlineColorAndroid={isFocused ? GRAY : LIGHT_GRAY}
+              onFocus={this.handleFocus}
+              onBlur={this.handleBlur}
+              value={this.state.email}
+              onChangeText={this.handleChange('email')}
+              style={Styles.inputAuth}
+              onSubmitEditing={() => this.password.focus()}
+            />
+            <TextInput
+              placeholder="Password"
+              selectionColor={GRAY}
+              underlineColorAndroid={isFocused ? GRAY : LIGHT_GRAY}
+              onFocus={this.handleFocus}
+              onBlur={this.handleBlur}
+              value={this.state.password}
+              secureTextEntry={true}
+              onChangeText={this.handleChange('password')}
+              style={Styles.inputAuth}
+              ref={r => (this.password = r)}
+              onSubmitEditing={() => this.phone.focus()}
+            />
+            <TextInput
+              placeholder="Phone Number"
+              selectionColor={GRAY}
+              underlineColorAndroid={isFocused ? GRAY : LIGHT_GRAY}
+              onFocus={this.handleFocus}
+              onBlur={this.handleBlur}
+              value={this.state.phone}
+              keyboardType="number-pad"
+              onChangeText={this.handleChange('phone')}
+              style={Styles.inputAuth}
+              ref={r => (this.phone = r)}
+              onSubmitEditing={() => this.name.focus()}
+            />
+            <TextInput
+              placeholder="Name"
+              selectionColor={GRAY}
+              underlineColorAndroid={isFocused ? GRAY : LIGHT_GRAY}
+              onFocus={this.handleFocus}
+              onBlur={this.handleBlur}
+              value={this.state.name}
+              onChangeText={this.handleChange('name')}
+              style={Styles.inputAuth}
+              ref={r => (this.name = r)}
+              onSubmitEditing={() => this.fullName.focus()}
+            />
+            <TextInput
+              placeholder="Full name"
+              selectionColor={GRAY}
+              underlineColorAndroid={isFocused ? GRAY : LIGHT_GRAY}
+              onFocus={this.handleFocus}
+              onBlur={this.handleBlur}
+              value={this.state.full_name}
+              onChangeText={this.handleChange('full_name')}
+              style={Styles.inputAuth}
+              ref={r => (this.fullName = r)}
+            />
+            <TouchableOpacity
+              onPress={this.handleSubmit}
+              style={Styles.buttons}>
+              {isLoading ? (
+                <Spinner color="#517fa4" />
+              ) : (
+                <Icon
+                  name={'arrow-right'}
+                  style={Styles.buttons}
+                  type="evilicon"
+                  size={50}
+                  color="#517fa4"
+                />
+              )}
+            </TouchableOpacity>
+            <Text style={Styles.buttonsText} onPress={this.handleSignIn}>
+              Sign In
+            </Text>
+          </View>
+        </ScrollView>
+      </View>
     );
   }
 }

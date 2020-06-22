@@ -11,7 +11,6 @@ import AsyncStorage from '@react-native-community/async-storage';
 import {Styles, GRAY, LIGHT_GRAY} from './Styles';
 import {Icon} from 'react-native-elements';
 import firebase from 'firebase';
-// import Icon from 'react-native-vector-icons';
 import LinearGradient from 'react-native-linear-gradient';
 import Orientation from 'react-native-orientation';
 
@@ -29,6 +28,8 @@ class Login extends Component {
       height,
       width,
     };
+  }
+  componentDidMount() {
     Orientation.lockToPortrait();
   }
   componentWillUnmount() {
@@ -157,7 +158,7 @@ class Login extends Component {
               onSubmitEditing={() => this.password.focus()}
             />
             <TextInput
-              placeholder="password"
+              placeholder="Password"
               selectionColor={GRAY}
               underlineColorAndroid={isFocused ? GRAY : LIGHT_GRAY}
               onFocus={this.handleFocus}
