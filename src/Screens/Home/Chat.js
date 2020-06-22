@@ -2,9 +2,20 @@ import React, {Fragment} from 'react';
 // import {Text, TextInput, FlatList, View, TouchableOpacity} from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import firebase from 'firebase';
-import {GiftedChat} from 'react-native-gifted-chat';
-import {Header, Left, Body, Right, Button, Icon, Title} from 'native-base';
-import {Image} from 'react-native';
+import {GiftedChat, Send, Bubble, Day} from 'react-native-gifted-chat';
+import {
+  Header,
+  Left,
+  Body,
+  Right,
+  Button,
+  Icon,
+  Text,
+  View,
+  Subtitle,
+} from 'native-base';
+import {Image, Dimensions, TextInput} from 'react-native';
+import {StylesHome} from './StylesHome';
 
 class Chat extends React.Component {
   constructor(props) {
@@ -27,22 +38,21 @@ class Chat extends React.Component {
       name: await AsyncStorage.getItem('name'),
       image: await AsyncStorage.getItem('image'),
     });
-    await firebase
+    this.fblistener = await firebase
       .database()
       .ref('messages')
       .child(this.state.uid)
-      .child(chatId)
-      .on('child_added', value => {
-        this.setState(previousState => {
-          return {
-            messagesList: GiftedChat.append(
-              previousState.messagesList,
-              value.val(),
-            ),
-          };
-        });
-        // console.warn(value.val(), 'mmsdsj');
+      .child(chatId);
+    this.fblistener.on('child_added', value => {
+      this.setState(previousState => {
+        return {
+          messagesList: GiftedChat.append(
+            previousState.messagesList,
+            value.val(),
+          ),
+        };
       });
+    });
     await firebase
       .database()
       .ref('users')
@@ -53,16 +63,9 @@ class Chat extends React.Component {
           FriendsInfo: data,
         });
       });
-    await firebase
-      .database()
-      .ref('users')
-      .on('value')
-      .then(_res => {
-        const data = _res.val()[chatId];
-        this.setState({
-          FriendsInfo: data,
-        });
-      });
+  };
+  componentWillUnmount = () => {
+    this.fblistener.off();
   };
   sendMessage = () => {
     if (this.state.text.length > 0) {
@@ -99,28 +102,114 @@ class Chat extends React.Component {
       });
     }
   };
+  renderSend = props => {
+    return (
+      <Send {...props} onSend={this.sendMessage}>
+        <View style={StylesHome.renderSendView}>
+          <Icon name="send" style={StylesHome.renderSendIcon} />
+        </View>
+      </Send>
+    );
+  };
+  renderDay = props => {
+    return (
+      <Day
+        {...props}
+        wrapperStyle={StylesHome.wrapperStyleDay}
+        textStyle={StylesHome.wrapperTextStyleDay}
+      />
+    );
+  };
+  renderBubble = props => {
+    return (
+      <Bubble
+        {...props}
+        textStyle={{
+          right: {
+            color: 'white',
+          },
+          left: {
+            color: '#595959',
+          },
+        }}
+        containerStyle={{
+          right: {
+            paddingBottom: 6.5,
+          },
+          left: {
+            paddingBottom: 6.5,
+          },
+        }}
+        bottomContainerStyle={
+          {
+            //   right: {backgroundColor: 'red'},
+          }
+        }
+        wrapperStyle={{
+          left: {
+            backgroundColor: '#e8e8e8',
+          },
+          right: {
+            backgroundColor: '#33A6EA',
+          },
+        }}
+      />
+    );
+  };
+  renderToBottom = props => {
+    return (
+      <View style={StylesHome.renderToBottomView}>
+        <Icon name="ios-arrow-down" style={StylesHome.renderToBottomIcon} />
+      </View>
+    );
+  };
+  renderTextInput = props => {
+    return (
+      <View style={StylesHome.renderTextInput}>
+        <TextInput
+          {...props}
+          placeholder={'Pesan'}
+          multiline={true}
+          onSend={this.sendMessage}
+          value={this.state.text}
+          onChangeText={val =>
+            this.setState({
+              text: val,
+            })
+          }
+          style={StylesHome.renderChangeTextInput}
+        />
+      </View>
+    );
+  };
   render() {
     const data = this.state;
     return (
       <Fragment>
-        <Header style={{backgroundColor: '#1E90FF'}}>
-          <Left>
+        <Header style={StylesHome.headStyle}>
+          <Left style={StylesHome.headLeft}>
             <Button
               transparent
               onPress={() => this.props.navigation.navigate('ChatList')}>
               <Icon name="arrow-back" />
             </Button>
-          </Left>
-          <Left>
             <Image
-              style={{height: 40, width: 40, borderRadius: 60}}
+              style={StylesHome.headImage}
               source={{uri: data.FriendsInfo.image}}
             />
+            <View style={StylesHome.headWrapperTitle}>
+              <Text
+                numberOfLines={1}
+                lineBreakMode={'tail'}
+                style={StylesHome.headTitle}>
+                {data.FriendsInfo.name || ''}
+              </Text>
+              <Text style={StylesHome.headStatus}>
+                {data.FriendsInfo.status || ''}
+              </Text>
+            </View>
           </Left>
-          <Body>
-            <Title>{data.FriendsInfo.name || 'wait'}</Title>
-          </Body>
-          <Right>
+          <Right style={StylesHome.headRight}>
             {/* <Button transparent>
               <Icon name="ios-videocam" />
             </Button>
@@ -145,9 +234,17 @@ class Chat extends React.Component {
           user={{
             _id: data.uid,
             name: data.name,
-            avatar: data.image,
           }}
           onInputTextChanged={val => this.setState({text: val})}
+          renderSend={this.renderSend}
+          renderBubble={this.renderBubble}
+          alwaysShowSend={true}
+          alignTop={true}
+          scrollToBottom={true}
+          scrollToBottomComponent={this.renderToBottom}
+          renderAvatar={null}
+          renderDay={this.renderDay}
+          renderComposer={this.renderTextInput}
         />
       </Fragment>
     );
