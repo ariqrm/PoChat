@@ -4,6 +4,7 @@ export const LIGHT_GRAY = '#D3D3D3';
 const height = Dimensions.get('screen').height;
 const width = Dimensions.get('screen').width;
 export const StylesHome = StyleSheet.create({
+  // Style chat room
   headStyle: {
     backgroundColor: '#1E90FF',
     height: 45,
@@ -86,4 +87,5 @@ export const StylesHome = StyleSheet.create({
     maxHeight: 160,
     overflow: 'scroll',
   },
+  // Style List Chat
 });
