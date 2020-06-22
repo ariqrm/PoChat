@@ -30,7 +30,7 @@ export default class AuthLoadingSrceen extends React.Component {
           style={Styles.icons}
           source={require('../../Assets/pochat-2-01.png')}
         />
-        <ActivityIndicator />
+        <ActivityIndicator size="large" color="#fff" />
         <StatusBar barStyle="default" />
       </View>
     );
