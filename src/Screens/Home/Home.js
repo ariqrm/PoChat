@@ -38,6 +38,7 @@ class Home extends React.Component {
   }
   componentWillUnmount() {
     geolocation.stopObserving();
+    this.nearbyListener.off();
   }
   componentDidMount = async () => {
     // await PermissionsAndroid.request(
@@ -102,17 +103,15 @@ class Home extends React.Component {
     });
   }
   async nearby() {
-    await firebase
-      .database()
-      .ref('users')
-      .on('value', _res => {
-        const data = Object.keys(_res.val()).map(Key => {
-          return _res.val()[Key];
-        });
-        this.setState({
-          data: data,
-        });
+    this.nearbyListener = await firebase.database().ref('users');
+    this.nearbyListener.on('value', _res => {
+      const data = Object.keys(_res.val()).map(Key => {
+        return _res.val()[Key];
       });
+      this.setState({
+        data: data,
+      });
+    });
   }
   Chat = Chatid => {
     if (Chatid !== this.state.uid) {
