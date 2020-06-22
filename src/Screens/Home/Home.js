@@ -38,6 +38,7 @@ class Home extends React.Component {
   }
   componentWillUnmount() {
     geolocation.stopObserving();
+    geolocation.clearWatch();
     this.nearbyListener.off();
   }
   componentDidMount = async () => {
@@ -81,7 +82,7 @@ class Home extends React.Component {
           this.onRegionChange(region, region.latitude, region.longitude);
           this.nearby();
         },
-        error => console.warn('eeror', error),
+        error => console.warn('error', error),
         {
           enableHighAccuracy: true,
           timeout: 15000,
@@ -139,10 +140,10 @@ class Home extends React.Component {
           minZoomLevel={0} // default => 0
           maxZoomLevel={20}
           region={this.state.mapRegion}>
-          {this.state.data.map(item => {
+          {this.state.data.map((item, index) => {
             const latlang = item.location || {latitude: '1', longitude: '1'};
             const keys =
-              'Y' + latlang.latitude + latlang.longitude || '987654321';
+              'Y' + latlang.latitude + latlang.longitude + index || '987654321';
             return (
               <Marker
                 key={keys}

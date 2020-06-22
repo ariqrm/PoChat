@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import firebase from 'firebase';
+import LinearGradient from 'react-native-linear-gradient';
 
 class Profile extends Component {
   constructor(props) {
@@ -33,21 +34,22 @@ class Profile extends Component {
   componentDidMount = async () => {
     AsyncStorage.getItem('@Key').then(res => {
       this.setState({uid: res});
-      firebase
-        .database()
-        .ref('users')
-        .on('value', _res => {
-          const data = _res.val()[res];
-          this.setState({
-            data: data,
-            Profile: {
-              name: data.name,
-              email: data.email,
-              phone: data.phone,
-            },
-          });
+      this.profileUser = firebase.database().ref('users');
+      this.profileUser.on('value', _res => {
+        const data = _res.val()[res];
+        this.setState({
+          data: data,
+          Profile: {
+            name: data.name,
+            email: data.email,
+            phone: data.phone,
+          },
         });
+      });
     });
+  };
+  componentWillUnmount = () => {
+    this.profileUser.off();
   };
   handleFocus = () => {
     this.setState({
@@ -95,7 +97,7 @@ class Profile extends Component {
     const data = this.state.data;
     return (
       <Container>
-        <View>
+        <ScrollView>
           <View style={style.body}>
             <Image
               source={{
@@ -113,45 +115,39 @@ class Profile extends Component {
               style={style.userImage}
             />
           </View>
-          <ScrollView showsVerticalScrollIndicator={false}>
-            <View style={style.infoUser}>
-              <Text style={style.buttonsText}>Username</Text>
-              {console.warn(this.state.isFocused)}
-              <TextInput
-                placeholder={data.name}
-                // underlineColorAndroid={this.state.isFocused === true ? 'green' : 'red'}
-                onFocus={this.handleFocus}
-                onBlur={this.handleBlur}
-                value={this.state.Profile.name || data.name}
-                onChangeText={this.handleChange('name')}
-                style={style.Text}
-              />
-              <Text style={style.buttonsText}>Email</Text>
-              <Text style={style.Text}>{data.email}</Text>
-              <Text style={style.buttonsText}>Phone</Text>
-              <TextInput
-                placeholder={data.phone}
-                onFocus={this.handleFocus}
-                onBlur={this.handleBlur}
-                value={this.state.Profile.phone || data.phone}
-                onChangeText={this.handleChange('phone')}
-                style={style.Text}
-              />
-              <Text style={style.buttonsText}>Image profile</Text>
-              <TextInput
-                placeholder={data.image}
-                onFocus={this.handleFocus}
-                onBlur={this.handleBlur}
-                value={this.state.Profile.image || data.image}
-                onChangeText={this.handleChange('image')}
-                style={style.Text}
-              />
-            </View>
-          </ScrollView>
-          <Button style={style.buttons} onPress={this.SignOut}>
+          <View style={style.infoUser}>
+            <Text style={style.buttonsText}>Username</Text>
+            {/* {console.warn(this.state.isFocused)} */}
+            <TextInput
+              placeholder={data.name}
+              // underlineColorAndroid={this.state.isFocused === true ? 'green' : 'red'}
+              onFocus={this.handleFocus}
+              onBlur={this.handleBlur}
+              value={this.state.Profile.name || data.name}
+              onChangeText={this.handleChange('name')}
+              style={style.Text}
+            />
+            <Text style={style.buttonsText}>Email</Text>
+            <Text style={style.Text}>{data.email}</Text>
+            <Text style={style.buttonsText}>Phone</Text>
+            <TextInput
+              placeholder={data.phone}
+              onFocus={this.handleFocus}
+              onBlur={this.handleBlur}
+              value={this.state.Profile.phone || data.phone}
+              onChangeText={this.handleChange('phone')}
+              style={style.Text}
+            />
+            <LinearGradient
+              colors={['#a1ffd1', '#5998ff']}
+              style={style.logoutButton}>
+              <Text style={style.logoutText}>logout</Text>
+            </LinearGradient>
+          </View>
+          {/* <Button style={style.buttons} onPress={this.SignOut}>
             <Icon name="logout" type="antdesign" size={30} color="#4a4a4aff" />
-          </Button>
-        </View>
+          </Button> */}
+        </ScrollView>
       </Container>
     );
   }
@@ -159,13 +155,19 @@ class Profile extends Component {
 
 const style = StyleSheet.create({
   infoUser: {
-    marginTop: 10,
-    marginBottom: 150,
+    padding: 20,
+    top: -45,
+    zIndex: 500,
+    position: 'relative',
+    backgroundColor: '#fff',
+    borderTopRightRadius: 50,
+    borderTopLeftRadius: 50,
   },
   body: {
     justifyContent: 'center',
     alignItems: 'center',
-    height: '30%',
+    height: 200,
+    zIndex: -10,
     backgroundColor: '#5f27cd',
     position: 'relative',
   },
@@ -174,12 +176,13 @@ const style = StyleSheet.create({
     position: 'absolute',
     width: 150,
     height: 150,
-    right: '30%',
-    top: '10%',
+    right: 10,
+    top: 80,
     backgroundColor: '#a8a8a8bb',
     borderColor: '#a8a8a8bb',
     borderWidth: 5,
     borderRadius: 90,
+    zIndex: 1000,
   },
   buttons: {
     right: 3,
@@ -195,7 +198,7 @@ const style = StyleSheet.create({
   buttonsText: {
     color: '#4a4a4aff',
     padding: 3,
-    fontSize: 25,
+    fontSize: 20,
     fontWeight: 'bold',
   },
   Text: {
@@ -211,6 +214,20 @@ const style = StyleSheet.create({
     width: '100%',
     height: '100%',
     borderRadius: 90,
+  },
+  logoutButton: {
+    alignSelf: 'center',
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'relative',
+    borderRadius: 50,
+    height: 30,
+    width: 70,
+    top: 10,
+  },
+  logoutText: {
+    fontWeight: '700',
+    color: '#fff',
   },
 });
 
