@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Container, Button} from 'native-base';
+import {Container, Button, Spinner} from 'native-base';
 import {Icon} from 'react-native-elements';
 import {
   View,
@@ -91,6 +91,11 @@ class Profile extends Component {
         await AsyncStorage.clear().then(() =>
           this.props.navigation.navigate('Login'),
         );
+        this.setState({isLoading: false});
+      })
+      .catch(() => {
+        alert('somthing wrong');
+        this.setState({isLoading: false});
       });
   };
   render() {
@@ -139,9 +144,14 @@ class Profile extends Component {
               style={style.Text}
             />
             <LinearGradient
+              onTouchStart={this.SignOut}
               colors={['#a1ffd1', '#5998ff']}
               style={style.logoutButton}>
-              <Text style={style.logoutText}>logout</Text>
+              {this.state.isLoading ? (
+                <Spinner color="#fff" size={15} />
+              ) : (
+                <Text style={style.logoutText}>logout</Text>
+              )}
             </LinearGradient>
           </View>
           {/* <Button style={style.buttons} onPress={this.SignOut}>
