@@ -97,6 +97,12 @@ class Chat extends React.Component {
         .database()
         .ref()
         .update(updates);
+      firebase
+        .database()
+        .ref(`users/${chatId}`)
+        .update({
+          lastMessage: this.state.text,
+        });
       this.setState({
         text: '',
       });
